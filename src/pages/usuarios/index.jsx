@@ -176,7 +176,7 @@ export default function ListaUsuarios() {
                 <X size={20} />
               </button>
               <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-                {isEditing ? "Editar Usuário" : "Cadastrar Usuário"}
+                {isEditing ? "Editar Morador" : "Cadastrar Morador"}
               </h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <input className="w-full p-3 border rounded-lg" type="text" placeholder="Nome" value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })} required />

@@ -85,8 +85,13 @@ export default function ListaEntregas() {
     };
 
     const handleUpdate = async () => {
+        if (!selectedId) {
+            console.error("Erro: ID da entrega não encontrado.");
+            return;
+        }
+
         try {
-            await axios.put(`${API_URL}/api/entregas${selectedId}`, formData);
+            await axios.put(`${API_URL}/api/entregas/${selectedId}`, formData);
             fetchEntregas();
             closeModal();
         } catch (error) {
@@ -103,6 +108,11 @@ export default function ListaEntregas() {
                 console.error("Erro ao excluir entrega", error);
             }
         }
+    };
+
+    const getStatusFormatted = (status) => {
+        if (!status) return "";
+        return status.charAt(0).toUpperCase() + status.slice(1);
     };
 
     const getStatusClass = (status) => {
@@ -130,9 +140,10 @@ export default function ListaEntregas() {
                                 <thead className="bg-blue-600 text-white">
                                     <tr>
                                         <th className="px-4 py-3 text-left">Nome</th>
+                                        <th className="px-4 py-3 text-left">telefone</th>
                                         <th className="px-4 py-3 text-left">Descrição</th>
-                                        <th className="px-4 py-3 text-left">Status</th>
                                         <th className="px-4 py-3 text-left">Data da Entrega</th>
+                                        <th className="px-4 py-3 text-left">Status</th>
                                         <th className="px-4 py-3 text-left">Ações</th>
                                     </tr>
                                 </thead>
@@ -140,11 +151,15 @@ export default function ListaEntregas() {
                                     {entregas.map((entrega) => (
                                         <tr key={entrega._id} className="hover:bg-gray-100">
                                             <td className="px-4 py-3 whitespace-nowrap">{entrega.userId?.nome || "Não informado"}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">{entrega.userId?.telefone || "Não informado"}</td>
                                             <td className="px-4 py-3 whitespace-nowrap">{entrega.descricao}</td>
-                                            <td className="px-4 py-3 whitespace-nowrap">
-                                                <span className={getStatusClass(entrega.status)}>{entrega.status}</span>
-                                            </td>
+
                                             <td className="px-4 py-3 whitespace-nowrap">{new Date(entrega.dataEntrega).toLocaleDateString("pt-BR")}</td>
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <span className={getStatusClass(entrega.status)}>
+                                                    {getStatusFormatted(entrega.status)}
+                                                </span>
+                                            </td>
                                             <td className="px-4 py-3 flex gap-2">
                                                 <button onClick={() => openModal(entrega)} className="text-yellow-500 hover:text-yellow-600">
                                                     <Pencil size={20} />
@@ -172,7 +187,7 @@ export default function ListaEntregas() {
                             </h2>
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <select className="w-full p-3 border rounded-lg" value={formData.userId} onChange={(e) => setFormData({ ...formData, userId: e.target.value })} required>
-                                    <option value="">Selecione o Usuário</option>
+                                    <option value="">Selecione o Morador</option>
                                     {usuarios.map(user => (
                                         <option key={user._id} value={user._id}>{user.nome}</option>
                                     ))}
