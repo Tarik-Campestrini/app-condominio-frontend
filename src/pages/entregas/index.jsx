@@ -4,6 +4,8 @@ import { Table } from "@/components/ui/table";
 import NavAdmin from "@/components/ui/navAdmin";
 import { Pencil, Trash, X } from "lucide-react";
 
+// Pegando a URL da API do backend
+const API_URL = import.meta.env.VITE_URI_BACKEND || "http://localhost:5000";
 
 export default function ListaEntregas() {
     const [entregas, setEntregas] = useState([]);
@@ -27,7 +29,7 @@ export default function ListaEntregas() {
     }, []);
 
     const fetchEntregas = () => {
-        axios.get("/api/entregas")
+        axios.get(`${API_URL}/api/entregas`)
             .then(response => {
                 setEntregas(response.data);
                 setLoading(false);
@@ -74,7 +76,7 @@ export default function ListaEntregas() {
 
     const handleCreate = async () => {
         try {
-            await axios.post("/api/entregas", formData);
+            await axios.post(`${API_URL}/api/entregas`, formData);
             fetchEntregas();
             closeModal();
         } catch (error) {
@@ -84,7 +86,7 @@ export default function ListaEntregas() {
 
     const handleUpdate = async () => {
         try {
-            await axios.put(`/api/entregas/${selectedId}`, formData);
+            await axios.put(`${API_URL}/api/entregas${selectedId}`, formData);
             fetchEntregas();
             closeModal();
         } catch (error) {
@@ -95,7 +97,7 @@ export default function ListaEntregas() {
     const handleDelete = async (id) => {
         if (confirm("Tem certeza que deseja excluir esta entrega?")) {
             try {
-                await axios.delete(`/api/entregas/${id}`);
+                await axios.delete(`${API_URL}/api/entregas/${id}`);
                 fetchEntregas();
             } catch (error) {
                 console.error("Erro ao excluir entrega", error);

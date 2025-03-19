@@ -9,13 +9,16 @@ const Home = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newUser, setNewUser] = useState({ userId: "", nome: "", email: "", telefone: "", bloco: "", apartamento: "" });
 
+  // Pegando a URL da API do backend
+  const API_URL = import.meta.env.VITE_URI_BACKEND || "http://localhost:5000";
+
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/api/users");
+      const response = await fetch(`${API_URL}/api/users`);
       if (!response.ok) {
         throw new Error("Erro ao buscar usuários");
       }
@@ -32,7 +35,7 @@ const Home = () => {
         alert("Erro ao deletar: ID do usuário não encontrado.");
         return;
       }
-      await fetch(`/api/users/${userId}`, { method: "DELETE" });
+      await fetch(`${API_URL}/api/users/${userId}`, { method: "DELETE" });
       fetchUsers();
     } catch {
       alert("Erro ao excluir usuário.");
@@ -45,7 +48,7 @@ const Home = () => {
       return;
     }
     try {
-      await fetch(`/api/users/${editingUser._id}`, {
+      await fetch(`${API_URL}/api/users/${editingUser._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editingUser),
@@ -60,7 +63,7 @@ const Home = () => {
   const createUser = async () => {
     console.log("Cadastrando usuário:", newUser);
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch(`${API_URL}/api/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newUser),
@@ -140,7 +143,6 @@ const Home = () => {
           </div>
         )}
       </main>
-     
     </div>
   );
 };

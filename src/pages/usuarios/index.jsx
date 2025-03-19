@@ -4,6 +4,10 @@ import { Table } from "@/components/ui/table";
 import NavAdmin from "@/components/ui/navAdmin";
 import { Pencil, Trash, X } from "lucide-react";
 
+// Pegando a URL da API do backend
+const API_URL = import.meta.env.VITE_URI_BACKEND || "http://localhost:5000";
+
+
 export default function ListaUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +30,7 @@ export default function ListaUsuarios() {
   // 🔹 Buscar usuários
   const fetchUsuarios = async () => {
     try {
-      const response = await axios.get("/api/users");
+      const response = await axios.get(`${API_URL}/api/users`);
       setUsuarios(response.data);
       setLoading(false);
     } catch (error) {
@@ -81,7 +85,7 @@ export default function ListaUsuarios() {
       return;
     }
     try {
-      await axios.post("/api/auth/register", formData);
+      await axios.post(`${API_URL}/api/auth/register`, formData);
       fetchUsuarios();
       closeModal();
       alert("Usuário cadastrado com sucesso! ✅");
@@ -93,7 +97,7 @@ export default function ListaUsuarios() {
   // 🔹 Atualizar usuário
   const handleUpdate = async () => {
     try {
-      await axios.put(`/api/users/${selectedId}`, formData);
+      await axios.put(`${API_URL}/api/users/${selectedId}`, formData);
       fetchUsuarios();
       closeModal();
       alert("Usuário atualizado com sucesso! ✅");
@@ -106,7 +110,7 @@ export default function ListaUsuarios() {
   const handleDelete = async (id) => {
     if (confirm("Tem certeza que deseja excluir este usuário?")) {
       try {
-        await axios.delete(`/api/users/${id}`);
+        await axios.delete(`${API_URL}/api/users/${id}`);
         fetchUsuarios();
         alert("Usuário excluído com sucesso! ❌");
       } catch (error) {
