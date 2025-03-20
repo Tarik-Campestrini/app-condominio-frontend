@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext/auth"; // Certifique-se do caminho correto
+import { Menu, X } from "lucide-react"; // Ícones para o menu
 
 export default function NavAdmin() {
   const navigate = useNavigate();
-  const { user, signout } = useAuth(); // Obtém os dados do usuário do contexto
+  const { user, signout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false); // Estado para controlar o menu
 
   const handleLogout = () => {
     signout();
-    navigate("/"); // Redireciona para a página de login
+    navigate("/");
   };
 
   return (
@@ -19,13 +21,21 @@ export default function NavAdmin() {
 
         {/* Mensagem de boas-vindas */}
         {user && (
-          <span className="text-white font-medium">
+          <span className="hidden sm:block text-white font-medium">
             Bem-vindo, {user.nome}!
           </span>
         )}
 
-        {/* Menu de navegação */}
-        <ul className="flex items-center gap-8 ml-auto pr-0">
+        {/* Botão de menu para celular */}
+        <button
+          className="sm:hidden text-white focus:outline-none"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
+
+        {/* Menu de navegação para telas maiores */}
+        <ul className="hidden sm:flex items-center gap-8 ml-auto">
           <li><Link to="/home" className="text-white hover:text-gray-200">Início</Link></li>
           <li><Link to="/entregas" className="text-white hover:text-gray-200">Entregas</Link></li>
           <li><Link to="/usuarios" className="text-white hover:text-gray-200">Moradores</Link></li>
@@ -39,6 +49,23 @@ export default function NavAdmin() {
           </li>
         </ul>
       </div>
+
+      {/* Menu dropdown para telas pequenas */}
+      {menuOpen && (
+        <ul className="sm:hidden flex flex-col items-center gap-4 bg-blue-700 p-4 mt-2 rounded-lg shadow-md">
+          <li><Link to="/home" className="text-white hover:text-gray-200" onClick={() => setMenuOpen(false)}>Início</Link></li>
+          <li><Link to="/entregas" className="text-white hover:text-gray-200" onClick={() => setMenuOpen(false)}>Entregas</Link></li>
+          <li><Link to="/usuarios" className="text-white hover:text-gray-200" onClick={() => setMenuOpen(false)}>Moradores</Link></li>
+          <li>
+            <button 
+              onClick={() => { handleLogout(); setMenuOpen(false); }} 
+              className="text-white bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition"
+            >
+              Sair
+            </button>
+          </li>
+        </ul>
+      )}
     </nav>
   );
 }
