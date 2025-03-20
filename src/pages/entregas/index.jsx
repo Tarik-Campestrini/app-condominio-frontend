@@ -23,7 +23,7 @@ export default function ListaEntregas() {
 
     useEffect(() => {
         fetchEntregas();
-        axios.get("/api/users")
+        axios.get(`${API_URL}/api/users`)
             .then(response => setUsuarios(response.data))
             .catch(error => console.error("Erro ao buscar usuários", error));
     }, []);
