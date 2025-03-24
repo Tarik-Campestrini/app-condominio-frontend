@@ -31,6 +31,7 @@ export default function ListaUsuarios() {
   const fetchUsuarios = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/users`);
+      
       setUsuarios(response.data);
       setLoading(false);
     } catch (error) {
@@ -178,8 +179,8 @@ export default function ListaUsuarios() {
               <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
                 {isEditing ? "Editar Morador" : "Cadastrar Morador"}
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <input className="w-full p-3 border rounded-lg" type="text" placeholder="Nome" value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })} required />
+              <form onSubmit={handleSubmit} className="space-y-6">              
+                <input className="w-full p-3 border rounded-lg" type="text" id="nome" placeholder="Nome" value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })} required />                
                 <input className="w-full p-3 border rounded-lg" type="email" placeholder="E-mail" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
                 {!isEditing && (
                   <input className="w-full p-3 border rounded-lg" type="password" placeholder="Senha" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required />

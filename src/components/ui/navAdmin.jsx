@@ -39,6 +39,7 @@ export default function NavAdmin() {
           <li><Link to="/home" className="text-white hover:text-gray-200">Início</Link></li>
           <li><Link to="/entregas" className="text-white hover:text-gray-200">Entregas</Link></li>
           <li><Link to="/usuarios" className="text-white hover:text-gray-200">Moradores</Link></li>
+          <Link to="/avisos" className="text-white hover:text-gray-200">Avisos</Link>
           <li>
             <button 
               onClick={handleLogout} 
