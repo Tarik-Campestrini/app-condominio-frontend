@@ -45,7 +45,7 @@ export default function ListaAvisos() {
             .then(response => setUsuarios(response.data))
             .catch(error => console.error("Erro ao buscar usuários", error));
     };
-    
+
     const openModal = (aviso = null) => {
         if (aviso) {
             setIsEditing(true);
@@ -78,7 +78,12 @@ export default function ListaAvisos() {
 
     const handleCreate = async () => {
         try {
-            await axios.post(`${API_URL}/api/avisos`, formData);
+            const payload = {
+                ...formData,
+                userId: formData.userId === "todos" ? "todos" : formData.userId, 
+            };
+    
+            await axios.post(`${API_URL}/api/avisos`, payload);
             fetchAvisos();
             closeModal();
         } catch (error) {
@@ -93,17 +98,26 @@ export default function ListaAvisos() {
             fetchAvisos();
             closeModal();
         } catch (error) {
-            console.error("Erro ao atualizar aviso", error);
+            console.error("Erro ao atualizar aviso:", error.response?.data || error.message);
         }
     };
 
     const handleDelete = async (id) => {
+        console.log("Tentando excluir aviso com ID:", id);
+    
+        if (!id) {
+            console.error("ID inválido, cancelando requisição.");
+            return;
+        }
+    
         if (confirm("Tem certeza que deseja excluir este aviso?")) {
             try {
-                await axios.delete(`${API_URL}/api/avisos/${id}`);
+                const avisoId = id === "todos" ? "todos" : id;
+                await axios.delete(`${API_URL}/api/avisos/${avisoId}`);
+                console.log("Aviso deletado com sucesso!");
                 fetchAvisos();
             } catch (error) {
-                console.error("Erro ao excluir aviso", error);
+                console.error("Erro ao excluir aviso:", error.response?.data || error.message);
             }
         }
     };
@@ -129,7 +143,8 @@ export default function ListaAvisos() {
                                         <button onClick={() => openModal(aviso)} className="text-yellow-500 hover:text-yellow-600">
                                             <Pencil size={20} />
                                         </button>
-                                        <button onClick={() => handleDelete(aviso._id)} className="text-red-500 hover:text-red-600">
+                                        <button onClick={() => handleDelete(aviso.userId === "todos" ? "todos" : aviso._id)}
+                                            className="text-red-500 hover:text-red-600">
                                             <Trash size={20} />
                                         </button>
                                     </div>

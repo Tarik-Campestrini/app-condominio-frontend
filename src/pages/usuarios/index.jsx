@@ -31,7 +31,7 @@ export default function ListaUsuarios() {
   const fetchUsuarios = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/users`);
-      
+
       setUsuarios(response.data);
       setLoading(false);
     } catch (error) {
@@ -87,11 +87,13 @@ export default function ListaUsuarios() {
     }
     try {
       await axios.post(`${API_URL}/api/auth/register`, formData);
+      console.log(formData);
       fetchUsuarios();
       closeModal();
-      alert("Usuário cadastrado com sucesso! ✅");
+      alert("Usuário cadastrado com sucesso! ✅"); // 🔔 ALERTA DE SUCESSO
     } catch (error) {
       console.error("Erro ao criar usuário", error.response?.data || error.message);
+      alert("❌ Erro ao cadastrar usuário!");
     }
   };
 
@@ -179,15 +181,26 @@ export default function ListaUsuarios() {
               <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
                 {isEditing ? "Editar Morador" : "Cadastrar Morador"}
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-6">              
-                <input className="w-full p-3 border rounded-lg" type="text" id="nome" placeholder="Nome" value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })} required />                
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <input className="w-full p-3 border rounded-lg" type="text" id="nome" placeholder="Nome" value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })} required />
                 <input className="w-full p-3 border rounded-lg" type="email" placeholder="E-mail" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
                 {!isEditing && (
                   <input className="w-full p-3 border rounded-lg" type="password" placeholder="Senha" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required />
                 )}
                 <input className="w-full p-3 border rounded-lg" type="text" placeholder="Bloco" value={formData.bloco} onChange={(e) => setFormData({ ...formData, bloco: e.target.value })} required />
                 <input className="w-full p-3 border rounded-lg" type="text" placeholder="Apartamento" value={formData.apartamento} onChange={(e) => setFormData({ ...formData, apartamento: e.target.value })} required />
-                <input className="w-full p-3 border rounded-lg" type="text" placeholder="Telefone" value={formData.telefone} onChange={(e) => setFormData({ ...formData, telefone: e.target.value })} required />
+                <input
+                  className="w-full p-3 border rounded-lg"
+                  type="text"
+                  placeholder="Telefone"
+                  value={formData.telefone}
+                  onChange={(e) => {
+                    const onlyNumbers = e.target.value.replace(/\D/g, ""); // Remove tudo que não for número
+                    setFormData({ ...formData, telefone: onlyNumbers });
+                  }}
+                  maxLength={12} // Limita o número de caracteres
+                  required
+                />
                 <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600">
                   {isEditing ? "Atualizar" : "Salvar"}
                 </button>

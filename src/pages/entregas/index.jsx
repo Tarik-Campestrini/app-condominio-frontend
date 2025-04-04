@@ -77,8 +77,10 @@ export default function ListaEntregas() {
     const handleCreate = async () => {
         try {
             await axios.post(`${API_URL}/api/entregas`, formData);
+            console.log(formData);
             fetchEntregas();
             closeModal();
+            
         } catch (error) {
             console.error("Erro ao criar entrega", error);
         }
