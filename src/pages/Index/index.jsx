@@ -18,9 +18,9 @@ const Index = () => {
 
     try {
       const response = await signin(email, password);
-
+      // Verifica se o login foi bem-sucedido
       if (!response) {
-        alert("Login bem-sucedido!");
+        
         navigate("/home", { replace: true }); // Redireciona para a página home
       } else {
         setError(response); // Mostra o erro se houver

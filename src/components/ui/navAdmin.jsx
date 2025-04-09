@@ -53,20 +53,21 @@ export default function NavAdmin() {
 
       {/* Menu dropdown para telas pequenas */}
       {menuOpen && (
-        <ul className="sm:hidden flex flex-col items-center gap-4 bg-blue-700 p-4 mt-2 rounded-lg shadow-md">
-          <li><Link to="/home" className="text-white hover:text-gray-200" onClick={() => setMenuOpen(false)}>Início</Link></li>
-          <li><Link to="/entregas" className="text-white hover:text-gray-200" onClick={() => setMenuOpen(false)}>Entregas</Link></li>
-          <li><Link to="/usuarios" className="text-white hover:text-gray-200" onClick={() => setMenuOpen(false)}>Moradores</Link></li>
-          <li>
-            <button 
-              onClick={() => { handleLogout(); setMenuOpen(false); }} 
-              className="text-white bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition"
-            >
-              Sair
-            </button>
-          </li>
-        </ul>
-      )}
+  <ul className="sm:hidden flex flex-col items-center gap-4 bg-blue-700 p-4 mt-2 rounded-lg shadow-md">
+    <li><Link to="/home" className="text-white hover:text-gray-200" onClick={() => setMenuOpen(false)}>Início</Link></li>
+    <li><Link to="/entregas" className="text-white hover:text-gray-200" onClick={() => setMenuOpen(false)}>Entregas</Link></li>
+    <li><Link to="/usuarios" className="text-white hover:text-gray-200" onClick={() => setMenuOpen(false)}>Moradores</Link></li>
+    <li><Link to="/avisos" className="text-white hover:text-gray-200" onClick={() => setMenuOpen(false)}>Avisos</Link></li>
+    <li>
+      <button 
+        onClick={() => { handleLogout(); setMenuOpen(false); }} 
+        className="text-white bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition"
+      >
+        Sair
+      </button>
+    </li>
+  </ul>
+)}
     </nav>
   );
 }

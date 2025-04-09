@@ -1,46 +1,56 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Table } from "@/components/ui/table";
 import NavAdmin from "@/components/ui/navAdmin";
-import { Pencil, Trash, X } from "lucide-react";
+import AlertaModal from "@/components/Modal/AlertaModal";
+import ConfirmModal from "@/components/Modal/ConfirmModal";
+import { Pencil, Trash, X, Plus } from "lucide-react";
 
-// Pegando a URL da API do backend
 const API_URL = import.meta.env.VITE_URI_BACKEND || "http://localhost:5000";
-
 
 export default function ListaUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmData, setConfirmData] = useState({ id: null, mensagem: "", tipo: "erro", acao: null });
   const [isEditing, setIsEditing] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
     password: "",
+    telefone: "",
     bloco: "",
-    apartamento: "",
-    telefone: ""
+    apartamento: ""
   });
+  const [alerta, setAlerta] = useState({ open: false, tipo: "", mensagem: "" });
+
+  const mostrarAlerta = (tipo, mensagem) => {
+    setAlerta({ open: true, tipo, mensagem });
+    setTimeout(() => {
+      setAlerta((prev) => ({ ...prev, open: false }));
+    }, 3000);
+  };
+
+  const fetchUsuarios = () => {
+    axios
+      .get(`${API_URL}/api/users`)
+      .then((res) => {
+        setUsuarios(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar usuários", err);
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
     fetchUsuarios();
   }, []);
 
-  // 🔹 Buscar usuários
-  const fetchUsuarios = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/users`);
-
-      setUsuarios(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Erro ao buscar usuários", error);
-      setLoading(false);
-    }
-  };
-
-  // 🔹 Abrir o modal (Edição ou Criação)
   const openModal = (usuario = null) => {
     if (usuario) {
       setIsEditing(true);
@@ -49,118 +59,154 @@ export default function ListaUsuarios() {
         nome: usuario.nome || "",
         email: usuario.email || "",
         password: "",
+        telefone: usuario.telefone || "",
         bloco: usuario.bloco || "",
         apartamento: usuario.apartamento || "",
-        telefone: usuario.telefone || ""
       });
     } else {
       setIsEditing(false);
       setSelectedId(null);
-      setFormData({ nome: "", email: "", password: "", bloco: "", apartamento: "", telefone: "" });
+      setFormData({
+        nome: "",
+        email: "",
+        password: "",
+        telefone: "",
+        bloco: "",
+        apartamento: ""
+      });
     }
     setModalOpen(true);
   };
 
-  // 🔹 Fechar o modal
   const closeModal = () => {
     setModalOpen(false);
     setIsEditing(false);
     setSelectedId(null);
-    setFormData({ nome: "", email: "", password: "", bloco: "", apartamento: "", telefone: "" });
+    setFormData({
+      nome: "",
+      email: "",
+      password: "",
+      telefone: "",
+      bloco: "",
+      apartamento: ""
+    });
   };
 
-  // 🔹 Enviar formulário (Criar ou Atualizar)
-  const handleSubmit = async (e) => {
+  const handleFormSubmit = (e) => {
     e.preventDefault();
-    if (isEditing) {
-      handleUpdate();
-    } else {
-      handleCreate();
-    }
+    const acao = isEditing ? handleUpdate : handleCreate;
+    setModalOpen(false);
+    setTimeout(() => {
+      setConfirmData({
+        mensagem: isEditing ? "Tem certeza que deseja atualizar este usuário?" : "Tem certeza que deseja cadastrar este usuário?",
+        tipo: isEditing ? "info" : "sucesso",
+        acao: () => {
+          acao();
+          setConfirmOpen(false);
+        },
+      });
+      setConfirmOpen(true);
+    }, 300);
   };
 
-  // 🔹 Criar usuário
   const handleCreate = async () => {
-    if (!formData.telefone.trim()) {
-      alert("O campo telefone é obrigatório!");
-      return;
-    }
     try {
       await axios.post(`${API_URL}/api/auth/register`, formData);
-      console.log(formData);
       fetchUsuarios();
-      closeModal();
-      alert("Usuário cadastrado com sucesso! ✅"); // 🔔 ALERTA DE SUCESSO
+      mostrarAlerta("sucesso", "Usuário cadastrado com sucesso!");
     } catch (error) {
-      console.error("Erro ao criar usuário", error.response?.data || error.message);
-      alert("❌ Erro ao cadastrar usuário!");
+      console.error("Erro ao criar usuário", error);
     }
   };
 
-  // 🔹 Atualizar usuário
   const handleUpdate = async () => {
+    if (!selectedId) return;
     try {
-      await axios.put(`${API_URL}/api/users/${selectedId}`, formData);
+      const dataParaAtualizar = { ...formData };
+  
+      // Se o campo de senha estiver vazio, remove ele do objeto
+      if (!dataParaAtualizar.password) {
+        delete dataParaAtualizar.password;
+      }
+  
+      await axios.put(`${API_URL}/api/users/${selectedId}`, dataParaAtualizar);
       fetchUsuarios();
-      closeModal();
-      alert("Usuário atualizado com sucesso! ✅");
+      mostrarAlerta("info", "Usuário atualizado com sucesso!");
     } catch (error) {
-      console.error("Erro ao atualizar usuário", error.response?.data || error.message);
+      console.error("Erro ao atualizar usuário", error);
     }
   };
 
-  // 🔹 Deletar usuário
   const handleDelete = async (id) => {
-    if (confirm("Tem certeza que deseja excluir este usuário?")) {
-      try {
-        await axios.delete(`${API_URL}/api/users/${id}`);
-        fetchUsuarios();
-        alert("Usuário excluído com sucesso! ❌");
-      } catch (error) {
-        console.error("Erro ao excluir usuário", error.response?.data || error.message);
-      }
+    try {
+      await axios.delete(`${API_URL}/api/users/${id}`);
+      fetchUsuarios();
+      mostrarAlerta("erro", "Usuário deletado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao excluir usuário", error);
+    } finally {
+      setConfirmOpen(false);
+      setConfirmData({ id: null, mensagem: "", tipo: "erro", acao: null });
     }
   };
 
   return (
     <div className="flex flex-col min-h-screen">
       <NavAdmin />
-      <main className="flex-grow flex flex-col items-center justify-center bg-gray-100 ">
-        <div className="w-full max-w-7xl bg-white shadow-lg rounded-lg p-6 border border-gray-300">
-          <div className="flex flex-row items-center justify-between w-full mb-6">
-            <h1 className="text-4xl font-bold text-center w-full">Lista de Moradores</h1>
-            <button onClick={() => openModal()} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-              Cadastrar
+      <main className="flex-grow flex flex-col items-center justify-center bg-gray-100 px-4">
+        <div className="w-full max-w-7xl bg-white shadow-lg rounded-lg p-4 sm:p-6 border border-gray-300">
+          <div className="flex flex-col sm:flex-row items-center justify-between w-full mb-6 gap-4">
+            <h1 className="text-3xl sm:text-4xl font-bold text-center w-full sm:w-auto">Lista de Usuários</h1>
+            <button
+              onClick={() => openModal()}
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 flex items-center gap-2"
+            >
+              <Plus size={18} /> Cadastrar
             </button>
           </div>
+
           <div className="overflow-x-auto">
             {loading ? (
               <p className="text-center">Carregando...</p>
             ) : (
-              <Table className="w-full border border-gray-300 rounded-lg">
+              <Table className="w-full border border-gray-300 rounded-lg text-sm">
                 <thead className="bg-blue-600 text-white">
                   <tr>
                     <th className="px-4 py-3 text-left">Nome</th>
                     <th className="px-4 py-3 text-left">Email</th>
+                    <th className="px-4 py-3 text-left">Telefone</th>
                     <th className="px-4 py-3 text-left">Bloco</th>
                     <th className="px-4 py-3 text-left">Apartamento</th>
-                    <th className="px-4 py-3 text-left">Telefone</th>
                     <th className="px-4 py-3 text-left">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {usuarios.map((usuario) => (
-                    <tr key={usuario._id} className="hover:bg-gray-100">
-                      <td className="px-4 py-3 whitespace-nowrap">{usuario.nome}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">{usuario.email}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">{usuario.bloco}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">{usuario.apartamento}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">{usuario.telefone}</td>
+                  {usuarios.map((user) => (
+                    <tr key={user._id} className="hover:bg-gray-100">
+                      <td className="px-4 py-3 whitespace-nowrap">{user.nome}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">{user.email}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">{user.telefone}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">{user.bloco}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">{user.apartamento}</td>
                       <td className="px-4 py-3 flex gap-2">
-                        <button onClick={() => openModal(usuario)} className="text-yellow-500 hover:text-yellow-600">
+                        <button
+                          onClick={() => openModal(user)}
+                          className="text-yellow-500 hover:text-yellow-600"
+                        >
                           <Pencil size={20} />
                         </button>
-                        <button onClick={() => handleDelete(usuario._id)} className="text-red-500 hover:text-red-600">
+                        <button
+                          onClick={() => {
+                            setConfirmData({
+                              id: user._id,
+                              mensagem: "Tem certeza que deseja excluir este usuário?",
+                              tipo: "erro",
+                              acao: () => handleDelete(user._id),
+                            });
+                            setConfirmOpen(true);
+                          }}
+                          className="text-red-500 hover:text-red-600"
+                        >
                           <Trash size={20} />
                         </button>
                       </td>
@@ -173,40 +219,96 @@ export default function ListaUsuarios() {
         </div>
 
         {modalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-opacity-30 backdrop-blur-sm">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96 border border-gray-300 relative">
-              <button onClick={closeModal} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+          <div className="fixed inset-0 flex items-center justify-center px-2 z-50 bg-opacity-30 backdrop-blur-sm">
+            <div className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md border border-gray-300 relative">
+              <button
+                onClick={closeModal}
+                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+              >
                 <X size={20} />
               </button>
               <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-                {isEditing ? "Editar Morador" : "Cadastrar Morador"}
+                {isEditing ? "Editar Usuário" : "Cadastrar Usuário"}
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <input className="w-full p-3 border rounded-lg" type="text" id="nome" placeholder="Nome" value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })} required />
-                <input className="w-full p-3 border rounded-lg" type="email" placeholder="E-mail" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
+              <form onSubmit={handleFormSubmit} className="space-y-4">
+                <input
+                  className="w-full p-3 border rounded-lg"
+                  type="text"
+                  placeholder="Nome"
+                  value={formData.nome}
+                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                  required
+                />
+                <input
+                  className="w-full p-3 border rounded-lg"
+                  type="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                />
                 {!isEditing && (
-                  <input className="w-full p-3 border rounded-lg" type="password" placeholder="Senha" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required />
+                  <input
+                    className="w-full p-3 border rounded-lg"
+                    type="password"
+                    placeholder="Senha"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    required
+                  />
                 )}
-                <input className="w-full p-3 border rounded-lg" type="text" placeholder="Bloco" value={formData.bloco} onChange={(e) => setFormData({ ...formData, bloco: e.target.value })} required />
-                <input className="w-full p-3 border rounded-lg" type="text" placeholder="Apartamento" value={formData.apartamento} onChange={(e) => setFormData({ ...formData, apartamento: e.target.value })} required />
                 <input
                   className="w-full p-3 border rounded-lg"
                   type="text"
                   placeholder="Telefone"
                   value={formData.telefone}
-                  onChange={(e) => {
-                    const onlyNumbers = e.target.value.replace(/\D/g, ""); // Remove tudo que não for número
-                    setFormData({ ...formData, telefone: onlyNumbers });
-                  }}
-                  maxLength={12} // Limita o número de caracteres
+                  onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
                   required
                 />
-                <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600">
+                <input
+                  className="w-full p-3 border rounded-lg"
+                  type="text"
+                  placeholder="Bloco"
+                  value={formData.bloco}
+                  onChange={(e) => setFormData({ ...formData, bloco: e.target.value })}
+                  required
+                />
+                <input
+                  className="w-full p-3 border rounded-lg"
+                  type="text"
+                  placeholder="Apartamento"
+                  value={formData.apartamento}
+                  onChange={(e) => setFormData({ ...formData, apartamento: e.target.value })}
+                  required
+                />
+                <button
+                  type="submit"
+                  className={`w-full p-3 rounded-lg text-white ${
+                    isEditing ? "bg-blue-500 hover:bg-blue-600" : "bg-green-500 hover:bg-green-600"
+                  }`}
+                >
                   {isEditing ? "Atualizar" : "Salvar"}
                 </button>
               </form>
             </div>
           </div>
+        )}
+
+        {confirmOpen && (
+          <ConfirmModal
+            mensagem={confirmData.mensagem}
+            onConfirm={confirmData.acao}
+            onCancel={() => setConfirmOpen(false)}
+            tipo={confirmData.tipo}
+          />
+        )}
+
+        {alerta.open && (
+          <AlertaModal
+            tipo={alerta.tipo}
+            mensagem={alerta.mensagem}
+            onClose={() => setAlerta({ ...alerta, open: false })}
+          />
         )}
       </main>
     </div>

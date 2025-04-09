@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.1",
+    "@heroicons/react": "^2.2.0",
     "@radix-ui/react-toast": "^1.2.6",
     "@tailwindcss/vite": "^4.0.14",
     "app-condominio-front": "file:",
