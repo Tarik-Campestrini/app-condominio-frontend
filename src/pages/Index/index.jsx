@@ -59,9 +59,9 @@ const Index = () => {
               className="bg-blue-600 hover:bg-blue-700 text-white rounded p-2 w-full transition duration-300"
             />
           </form>
-          <p className="text-sm text-gray-600 text-center mt-4">
+          {/* <p className="text-sm text-gray-600 text-center mt-4">
             Ainda não tem conta? <a href="/register" className="text-blue-600 hover:underline">Cadastre-se</a>
-          </p>
+          </p> */}
         </div>
       </main>
     </div>
