@@ -156,7 +156,7 @@ export default function ListaUsuarios() {
       <main className="flex-grow flex flex-col items-center justify-center bg-gray-100 px-4">
         <div className="w-full max-w-7xl bg-white shadow-lg rounded-lg p-4 sm:p-6 border border-gray-300">
           <div className="flex flex-col sm:flex-row items-center justify-between w-full mb-6 gap-4">
-            <h1 className="text-3xl sm:text-4xl font-bold text-center w-full sm:w-auto">Lista de Usuários</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-center w-full sm:w-auto">Lista de Moradores</h1>
             <button
               onClick={() => openModal()}
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 flex items-center gap-2"

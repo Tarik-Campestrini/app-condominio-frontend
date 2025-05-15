@@ -1,4 +1,12 @@
-const Input = ({ name, type = "text", placeholder, value, onChange, onBlur, required }) => {
+const Input = ({
+  name,
+  type = "text",
+  placeholder,
+  value,
+  onChange,
+  onBlur,
+  required,
+}) => {
   return (
     <input
       name={name}
@@ -8,7 +16,7 @@ const Input = ({ name, type = "text", placeholder, value, onChange, onBlur, requ
       onChange={onChange}
       onBlur={onBlur}
       required={required}
-      className="border border-gray-300 rounded p-2"
+      className="border border-gray-300 rounded p-2 bg-white text-gray-900"
     />
   );
 };

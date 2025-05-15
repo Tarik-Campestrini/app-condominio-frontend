@@ -1,18 +1,17 @@
-// Importando 
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import RoutesApp from './routes'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import RoutesApp from './routes';
 import { AuthProvider } from "./contexts/AuthContext/auth";
-import "./global.css"
+import { ThemeProvider } from './contexts/ThemeContext';
 
 
 
 createRoot(document.getElementById('root')).render(
-  
-  <AuthProvider>
-
-    <RoutesApp />
-    
-  </AuthProvider>
- 
-)
+  <StrictMode>
+    <ThemeProvider>
+      <AuthProvider>
+        <RoutesApp />
+      </AuthProvider>
+    </ThemeProvider>
+  </StrictMode>
+);

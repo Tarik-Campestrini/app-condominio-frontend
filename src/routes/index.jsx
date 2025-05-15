@@ -4,9 +4,9 @@ import Home from "../pages/home";
 import Entregas from "../pages/entregas";
 import Usuarios from "../pages/usuarios";
 import Avisos from "../pages/avisos";
- // Importe a página de aviso
 import useAuth from "../hooks/useAuth";
-import { Footer } from "@/components/ui/footer";
+import { Footer } from "../components/ui/footer";
+
 
 const PrivateRoute = ({ element }) => {
   const isAuthenticated = useAuth();
@@ -16,6 +16,7 @@ const PrivateRoute = ({ element }) => {
 const RoutesApp = () => {
   return (
     <BrowserRouter>
+    
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/home" element={<PrivateRoute element={<Home />} />} />
