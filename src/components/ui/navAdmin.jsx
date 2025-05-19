@@ -73,7 +73,7 @@ export default function NavAdmin() {
                 className="text-white dark:text-gray-300 text-lg px-2 py-1 border border-white dark:border-gray-500 rounded hover:bg-blue-700 dark:hover:bg-gray-700 transition"
                 aria-label="Alternar modo escuro"
               >
-                {darkMode ? "☀️" : "🌙"}
+                {darkMode ? "🌙" : "☀️"}
               </button>
 
           {/* Botão menu mobile */}

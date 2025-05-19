@@ -5,7 +5,13 @@ const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "light";
+    // Lê do localStorage ou da <html class="dark"> colocada pelo script do index.html
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("theme");
+      if (stored) return stored;
+      return document.documentElement.classList.contains("dark") ? "dark" : "light";
+    }
+    return "light";
   });
 
   useEffect(() => {

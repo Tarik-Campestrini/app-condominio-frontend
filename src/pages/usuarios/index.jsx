@@ -151,12 +151,12 @@ export default function ListaUsuarios() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-500">
       <NavAdmin />
-      <main className="flex-grow flex flex-col items-center justify-center bg-gray-100 px-4">
-        <div className="w-full max-w-7xl bg-white shadow-lg rounded-lg p-4 sm:p-6 border border-gray-300">
+      <main className="flex-grow flex flex-col items-center justify-center bg-gray-100 px-4  dark:bg-gray-900">
+        <div className="w-full max-w-7xl bg-white  dark:bg-gray-900 shadow-lg rounded-lg p-4 sm:p-6 border border-gray-300">
           <div className="flex flex-col sm:flex-row items-center justify-between w-full mb-6 gap-4">
-            <h1 className="text-3xl sm:text-4xl font-bold text-center w-full sm:w-auto">Lista de Moradores</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-center w-full sm:w-auto  dark:text-gray-100">Lista de Moradores</h1>
             <button
               onClick={() => openModal()}
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 flex items-center gap-2"
@@ -182,7 +182,7 @@ export default function ListaUsuarios() {
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {usuarios.map((user) => (
-                    <tr key={user._id} className="hover:bg-gray-100">
+                    <tr key={user._id} className="bg-gray-100 dark:bg-gray-800">
                       <td className="px-4 py-3 whitespace-nowrap">{user.nome}</td>
                       <td className="px-4 py-3 whitespace-nowrap">{user.email}</td>
                       <td className="px-4 py-3 whitespace-nowrap">{user.telefone}</td>
@@ -220,19 +220,19 @@ export default function ListaUsuarios() {
 
         {modalOpen && (
           <div className="fixed inset-0 flex items-center justify-center px-2 z-50 bg-opacity-30 backdrop-blur-sm">
-            <div className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md border border-gray-300 relative">
+            <div className="bg-white  dark:bg-gray-800 p-6 rounded-lg shadow-2xl w-full max-w-md border border-gray-300 relative">
               <button
                 onClick={closeModal}
                 className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
               >
                 <X size={20} />
               </button>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+              <h2 className="text-2xl font-semibold text-gray-800  dark:text-gray-100 mb-6 text-center">
                 {isEditing ? "Editar Usuário" : "Cadastrar Usuário"}
               </h2>
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 <input
-                  className="w-full p-3 border rounded-lg"
+                  className="text-gray-800  dark:text-gray-800 w-full p-3 border rounded-lg"
                   type="text"
                   placeholder="Nome"
                   value={formData.nome}
@@ -240,7 +240,7 @@ export default function ListaUsuarios() {
                   required
                 />
                 <input
-                  className="w-full p-3 border rounded-lg"
+                  className="text-gray-800  dark:text-gray-800 w-full p-3 border rounded-lg"
                   type="email"
                   placeholder="Email"
                   value={formData.email}
@@ -249,7 +249,7 @@ export default function ListaUsuarios() {
                 />
                 {!isEditing && (
                   <input
-                    className="w-full p-3 border rounded-lg"
+                    className="text-gray-800  dark:text-gray-800 w-full p-3 border rounded-lg"
                     type="password"
                     placeholder="Senha"
                     value={formData.password}
@@ -266,7 +266,7 @@ export default function ListaUsuarios() {
                   required
                 />
                 <input
-                  className="w-full p-3 border rounded-lg"
+                  className="text-gray-800  dark:text-gray-800 w-full p-3 border rounded-lg"
                   type="text"
                   placeholder="Bloco"
                   value={formData.bloco}
@@ -274,7 +274,7 @@ export default function ListaUsuarios() {
                   required
                 />
                 <input
-                  className="w-full p-3 border rounded-lg"
+                  className="text-gray-800  dark:text-gray-800 w-full p-3 border rounded-lg"
                   type="text"
                   placeholder="Apartamento"
                   value={formData.apartamento}

@@ -1,40 +1,38 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-// Cria o contexto
-const ThemeContext = createContext();
+function applyThemeClass(theme) {
+  const root = document.documentElement;
+  if (theme === "dark") {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+}
 
-// Provider do tema
-export const ThemeProvider = ({ children }) => {
+export function useTheme() {
+  const getInitialTheme = () => {
+    const stored = localStorage.getItem("theme");
+    if (stored) return stored;
+
+    // fallback para preferências do sistema
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return prefersDark ? "dark" : "light";
+  };
+
   const [theme, setTheme] = useState(() => {
-    // Tenta pegar o tema salvo no localStorage
-    const savedTheme = localStorage.getItem("theme");
-    return savedTheme === "dark" ? "dark" : "light";
+    const initialTheme = getInitialTheme();
+    applyThemeClass(initialTheme); // aplica imediatamente ao iniciar
+    return initialTheme;
   });
 
-  // Aplica a classe do Tailwind no <html>
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-
-    // Salva no localStorage
+    applyThemeClass(theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // Alternador
   const toggleTheme = () => {
-    setTheme(prev => (prev === "light" ? "dark" : "light"));
+    setTheme(prev => (prev === "dark" ? "light" : "dark"));
   };
 
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-};
-
-// Hook personalizado
-export const useTheme = () => useContext(ThemeContext);
+  return { theme, toggleTheme };
+}
